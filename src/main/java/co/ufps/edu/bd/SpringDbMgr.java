@@ -3,10 +3,8 @@ package co.ufps.edu.bd;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Properties;
 import javax.sql.DataSource;
-import org.apache.commons.io.Charsets;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -32,15 +30,32 @@ public class SpringDbMgr {
   private DataSource dataSource;
 
   public SpringDbMgr() {
-    initDataSource();
+    //initDataSource();
+    initDataSource2();
   }
 
   private void initDataSource() {
-    
     dataSource = new DriverManagerDataSource(System.getProperty("cloudsql"));
-    //dataSource = new DriverManagerDataSource("jdbc:mysql://35.203.35.232:3306/graduados?useUnicode=true&amp;characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false");
   }
+  
+  private void initDataSource2() {
+   
+    try {
+      Class.forName("com.mysql.jdbc.Driver");
+    } catch (ClassNotFoundException e) {
+      new Exception();
+    }
 
+    Properties p = new Properties();
+    p.setProperty("user", "root");
+    p.setProperty("password", "123454");
+    p.setProperty("driverClassName", "com.mysql.jdbc.Driver");
+
+    dataSource = new DriverManagerDataSource(
+        "jdbc:mysql://35.203.35.232:3306/graduados?useUnicode=true&amp;characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false",
+        p);
+  }
+  
   /**
    * This method implements SELECT query execution logic without parameters in Database System using
    * Spring-JDBC.

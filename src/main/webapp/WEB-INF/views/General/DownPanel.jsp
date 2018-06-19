@@ -19,9 +19,9 @@
 							<h2>Visitantes</h2>
 						</div>
 						<ul class="list-unstyled latest-list">
-							<li style="color: #fff">Hoy: 55</li>
-							<li style="color: #fff">&Uacute;ltimo mes: 4.350</li>
-							<li style="color: #fff">Desde el principio: 80.012</li>
+							<li style="color: #fff">Hoy: ${visitasDia}</li>
+							<li style="color: #fff">&Uacute;ltimo mes: ${visitasMes}</li>
+							<li style="color: #fff">Desde el principio: ${visitasSiempre}</li>
 						</ul>
 					</div>
 				</div>
@@ -68,7 +68,7 @@
 			<div class="row">
 				<div class="col-md-8">
 					<p>
-						2018� All Rights Reserved. Desarrollado por: <a href="#">VAVM
+						2018 © All Rights Reserved. Desarrollado por: <a href="#">VAVM
 							- Departamento de Sistemas</a>
 					</p>
 				</div>

@@ -1,5 +1,7 @@
 package co.ufps.edu.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +24,9 @@ import co.ufps.edu.dto.Logo;
 @Controller
 public class LogoController {
 
+  
+  @Autowired
   private LogoDao logoDao;
-
-  /**
-   * Constructor de la clase en donde se inicializan las variables
-   */
-  public LogoController() {
-    logoDao = new LogoDao();
-  }
 
   /**
    * Método que retorna una pagina con todas los contenidos en el sistema.
@@ -66,21 +63,32 @@ public class LogoController {
 
       if(logo.getId() == 0) {
         String mensaje = logoDao.insertarLogo(logo);
+
         if (mensaje.equals("Registro exitoso")) {
           model.addAttribute("result", "Logo registrado con éxito.");
         } else {
           model.addAttribute("wrong", mensaje);
         }
       }else {
-        String mensaje = logoDao.actualizarLogo(logo);
+        
+        String mensaje = "Actualizacion exitosa";
+        logoDao.actualizarLogo(logo);
         if (mensaje.equals("Actualizacion exitosa")) {
           model.addAttribute("result", "Logo actualizado con éxito.");
         } else {
           model.addAttribute("wrong", mensaje);
         }
       }
+      
       return index(model);
 
+  }
+
+  
+  public void actualizarLogo(Logo logo) {
+    // TODO Auto-generated method stub
+   
+    
   }  
 
 }

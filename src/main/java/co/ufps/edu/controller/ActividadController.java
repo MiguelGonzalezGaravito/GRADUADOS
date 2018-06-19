@@ -1,5 +1,6 @@
 package co.ufps.edu.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,14 +23,8 @@ import co.ufps.edu.dto.Actividad;
 @Controller
 public class ActividadController {
 
+  @Autowired
   private ActividadDao actividadDao;
-
-  /**
-   * Constructor de la clase en donde se inicializan las variables
-   */
-  public ActividadController() {
-    actividadDao = new ActividadDao();
-  }
 
   /**
    * Método que retorna una pagina con todas los contenidos en el sistema.
@@ -74,7 +69,8 @@ public class ActividadController {
 
     // Consulta si tiene todos los campos llenos
     if (actividad.isValidoParaRegistrar()) {
-      String mensaje = actividadDao.registrarActividad(actividad);
+      String mensaje = "Registro exitoso";
+      actividadDao.registrarActividad(actividad);
       if (mensaje.equals("Registro exitoso")) {
         model.addAttribute("result", "Actividad registrada con éxito.");
         model.addAttribute("actividades", actividadDao.getActividades());
@@ -121,7 +117,8 @@ public class ActividadController {
 
     // Consulta si tiene todos los campos llenos
     if (actividad.isValidoParaActualizar()) {
-      String mensaje = actividadDao.editarActividad(actividad);
+      String mensaje = "Actualizacion exitosa";
+      actividadDao.editarActividad(actividad);
       if (mensaje.equals("Actualizacion exitosa")) {
         model.addAttribute("result", "Actividad actualizada con éxito.");
         model.addAttribute("actividades", actividadDao.getActividades());

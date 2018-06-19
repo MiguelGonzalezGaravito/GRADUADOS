@@ -51,6 +51,19 @@
                         <img class="align-content" src="resources/images/logo.png" alt="">
                     </a>
                 </div>
+                
+                <!-- Si hubo un registro exitoso muestra el mensaje-->
+				<c:if test="${not empty result}">
+					<div
+						class="sufee-alert alert with-close alert-success alert-dismissible fade show">
+						<c:out value='${result}' />
+						<button type="button" class="close" data-dismiss="alert"
+							aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+				</c:if>
+                
                <c:if test="${not empty wrong}">
                   
                    <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
@@ -63,6 +76,8 @@
                   
 				
               </c:if>
+                
+                
                 
                 <div class="login-form">
                     <!-- <form> -->
@@ -77,10 +92,14 @@
                              <form:password path="contraseña" class="form-control" placeholder="Password1234"/>     
                         </div>
 
+						<p><a href="${contextPath}/recordar">¿Olvidaste tu contraseña?</a></p>
+					
+							
                         <button type="submit" class="btn btn-success btn-flat m-b-30 m-t-30">Iniciar sesión</button>
                         
 
                      </form:form>
+                     
                 </div>
             </div>
         </div>

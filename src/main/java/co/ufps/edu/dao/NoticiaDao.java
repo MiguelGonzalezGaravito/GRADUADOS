@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import co.ufps.edu.bd.SpringDbMgr;
 import co.ufps.edu.dto.Noticia;
 import co.ufps.edu.util.ImagenUtil;
@@ -19,6 +21,7 @@ import co.ufps.edu.util.ImagenUtil;
  * @author ufps
  *
  */
+@Component
 public class NoticiaDao {
 
   private SpringDbMgr springDbMgr;
@@ -83,6 +86,7 @@ public class NoticiaDao {
    * @param noticia Objeto con todos los datos de la noticia a registrar.
    * @return El resultado de la acción.
    */
+  @Async
   public String registrarNoticia(Noticia noticia) {
 
     // Agrego los datos del registro (nombreColumna/Valor)
@@ -287,6 +291,7 @@ public class NoticiaDao {
     return noticia;
   }
 
+  @Async
   public String editarNoticia(Noticia noticia) {
 
     // Agrego los datos del registro (nombreColumna/Valor)

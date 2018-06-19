@@ -47,6 +47,7 @@
 			input.setAttribute("name","Imagen"+id);
 			input.setAttribute("accept","image/*");
 			input.setAttribute("onchange","revisarArchivos('"+id+"')");
+			input.setAttribute("required","true");
 			
 			// Se añade el input al div
 			div1.appendChild(input);

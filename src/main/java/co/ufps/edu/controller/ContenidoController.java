@@ -5,8 +5,10 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -38,19 +40,13 @@ import co.ufps.edu.dto.Contenido;
 @Controller
 public class ContenidoController {
 
+  @Autowired
   private ContenidoDao contenidoDao;
+  @Autowired
   private TipoContenidoDao tipoContenidoDao;
 
   /**
-   * Constructor de la clase en donde se inicializan las variables
-   */
-  public ContenidoController() {
-    contenidoDao = new ContenidoDao();
-    tipoContenidoDao = new TipoContenidoDao();
-  }
-
-  /**
-   * MÃ©todo que retorna una pagina con todas los contenidos en el sistema.
+   * Método que retorna una pagina con todas los contenidos en el sistema.
    * 
    * @return La página principal de contenidos.
    */
@@ -147,7 +143,9 @@ public class ContenidoController {
 
     // Consulta si tiene todos los campos llenos
     if (contenido.isValidoParaRegistrar()) {
-      String mensaje = contenidoDao.registrarContenido(contenido);
+      
+      String mensaje = "Registro exitoso";
+      contenidoDao.registrarContenido(contenido);
       if (mensaje.equals("Registro exitoso")) {
         return new ResponseEntity<String>("REGISTRO EXITOSO", HttpStatus.OK);
       } else {
@@ -160,12 +158,14 @@ public class ContenidoController {
     
   }
 
+
   @PostMapping(value = "servicios/actualizarInformacion" )
   public @ResponseBody ResponseEntity<String> actualizarInformacion(@RequestBody Contenido contenido) {
 
     // Consulta si tiene todos los campos llenos
     if (contenido.isValidoParaRegistrar()) {
-      String mensaje = contenidoDao.actualizarContenido(contenido);
+      String mensaje = "Actualizacion exitosa";
+      contenidoDao.actualizarContenido(contenido);
       if (mensaje.equals("Actualizacion exitosa")) {
         return new ResponseEntity<String>("ACTUALIZACIÓN EXITOSA", HttpStatus.OK);
       } else {

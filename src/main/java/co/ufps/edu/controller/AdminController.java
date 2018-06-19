@@ -4,6 +4,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -26,10 +28,13 @@ import co.ufps.edu.dao.NoticiaDao;
 import co.ufps.edu.dao.NovedadDao;
 import co.ufps.edu.dao.RedSocialDao;
 import co.ufps.edu.dao.SubCategoriaDao;
+import co.ufps.edu.dao.UsuarioDao;
+import co.ufps.edu.dao.VisitaDao;
 import co.ufps.edu.dto.Contenido;
 import co.ufps.edu.dto.Galeria;
 import co.ufps.edu.dto.Login;
 import co.ufps.edu.dto.Novedad;
+import co.ufps.edu.dto.Visita;
 import co.ufps.edu.util.JwtUtil;
 
 @Controller
@@ -37,50 +42,65 @@ public class AdminController {
 
   @Autowired
   private SessionManager sessionManager;
+  
+  @Autowired
+  private JavaMailSenderImpl javaMailService;
 
   private JwtUtil jwtUtil;
   private LoginDao loginDao;
   private CategoriaDao categoriaDao;
   private SubCategoriaDao subCategoriaDao;
-  private ContenidoDao contenidoDao;
-  private NoticiaDao noticiaDao;
-  private ActividadDao actividadDao;
-  private NovedadDao novedadDao;
-  private LogoDao logoDao;
-  private EnlaceDeInteresDao enlaceDeInteresDao;
-  private GaleriaDao galeriaDao;
+
   private ContactoDao contactoDao;
   private RedSocialDao redSocialDao;
   private ComponenteDao componenteDao;
-  private int i = 0;
+  private EnlaceDeInteresDao enlaceDeInteresDao;
+  private VisitaDao visitaDao;
+  private UsuarioDao usuarioDao;
+
+  @Autowired
+  private ContenidoDao contenidoDao;
+  @Autowired
+  private NoticiaDao noticiaDao;
+  @Autowired
+  private ActividadDao actividadDao;
+  @Autowired
+  private NovedadDao novedadDao;
+  @Autowired
+  private LogoDao logoDao;
+  @Autowired
+  private GaleriaDao galeriaDao;
 
   public AdminController() {
     jwtUtil = new JwtUtil();
     loginDao = new LoginDao();
     categoriaDao = new CategoriaDao();
     subCategoriaDao = new SubCategoriaDao();
-    contenidoDao = new ContenidoDao();
-    noticiaDao = new NoticiaDao();
-    actividadDao = new ActividadDao();
-    novedadDao = new NovedadDao();
-    logoDao = new LogoDao();
     enlaceDeInteresDao = new EnlaceDeInteresDao();
-    galeriaDao = new GaleriaDao();
     contactoDao = new ContactoDao();
     redSocialDao = new RedSocialDao();
     componenteDao = new ComponenteDao();
+    visitaDao = new VisitaDao();
+    usuarioDao = new UsuarioDao();
+    //usuarioDao.setMailSender(javaMailService);
   }
 
   @GetMapping("/") // Base
   public String main(Model model, HttpServletRequest request) {
-    
-    //guardarVisita(request);
+
+    guardarVisita(request);
     cargarModelo(model);
     return "index"; // Nombre del archivo jsp
   }
 
 
-  
+
+  private void guardarVisita(HttpServletRequest request) {
+    Visita visita = new Visita();
+    visita.setIp(getClientIpAddr(request));
+    visitaDao.registrarVisita(visita);
+  }
+
   private void cargarModelo(Model model) {
 
     model.addAttribute("categorias", categoriaDao.getCategoriasConSubcategorias());
@@ -88,14 +108,17 @@ public class AdminController {
     model.addAttribute("novedades", novedadDao.getUltimasNovedades());
     model.addAttribute("actividades", actividadDao.getUltimasActividades());
     model.addAttribute("galerias", galeriaDao.getGalerias());
-    
+
     model.addAttribute("redes", redSocialDao.getRedesSociales());
     model.addAttribute("enlaces", enlaceDeInteresDao.getEnlacesDeInteres());
     model.addAttribute("contactos", contactoDao.getContactos());
     model.addAttribute("logoHorizontal", logoDao.getLogo("LogoHorizontal"));
     model.addAttribute("logoVertical", logoDao.getLogo("LogoVertical"));
-    model.addAttribute("dependencia",Constantes.PROYECTO);
-    
+    model.addAttribute("dependencia", Constantes.PROYECTO);
+    model.addAttribute("visitasDia", visitaDao.getCantidadVisitasDia());
+    model.addAttribute("visitasMes", visitaDao.getCantidadVisitasMes());
+    model.addAttribute("visitasSiempre", visitaDao.getCantidadVisitas());
+
   }
 
   @GetMapping("/admin") // Base
@@ -130,16 +153,17 @@ public class AdminController {
    * @return La pagina a donde fue redireccionado.
    */
   @PostMapping("/autenticar")
-  public String authenticateUser(@ModelAttribute("login") Login login,Model model,
+  public String authenticateUser(@ModelAttribute("login") Login login, Model model,
       HttpServletRequest request) {
-    
+
     /*
      * Consulto si los datos no vienen nulos
      */
     if (!StringUtils.isEmpty(login.getCorreoInstitucional())
         && !StringUtils.isEmpty(login.getContraseña())) {
       // Consulto en base de datos si se encuentra ese correo y esa contraseña
-      String resultado = loginDao.authenticate(login.getCorreoInstitucional(), login.getContraseña());
+      String resultado =
+          loginDao.authenticate(login.getCorreoInstitucional(), login.getContraseña());
 
       // Si el resultado no es vacio es por que si existe ese correo y esa contraseña
       if (!resultado.isEmpty()) {
@@ -201,7 +225,7 @@ public class AdminController {
     model.addAttribute("catidadContactos", this.contactoDao.getCantidadContactos());
     model.addAttribute("catidadRedesSociales", this.redSocialDao.getCantidadRedesSociales());
   }
-  
+
   /**
    * Método que obtiene la pagina de obtener un componente dado un ID.
    * 
@@ -210,24 +234,25 @@ public class AdminController {
    * @return La pagina con la información del contenido cargado.
    */
   @GetMapping(value = "/servicios/componente")
-  public String obtenerContenido(@RequestParam("id") long idComponente,@RequestParam("componente") String tipo, Model model) {
+  public String obtenerContenido(@RequestParam("id") long idComponente,
+      @RequestParam("componente") String tipo, Model model) {
     // Consulto que el Id sea mayor a 0.
     if (idComponente <= 0) {
       return "index";
     }
-    Contenido contenido = componenteDao.obtenerContenidoComponentePorId(idComponente,tipo);
-    
-    
+    Contenido contenido = componenteDao.obtenerContenidoComponentePorId(idComponente, tipo);
+
+
     cargarModelo(model);
-    model.addAttribute("titulo",(contenido == null)?"":contenido.getNombre());
-    model.addAttribute("codigo",(contenido == null)?"":contenido.getContenido());
-    if(contenido.getId() != 0) {
+    model.addAttribute("titulo", (contenido == null) ? "" : contenido.getNombre());
+    model.addAttribute("codigo", (contenido == null) ? "" : contenido.getContenido());
+    if (contenido.getId() != 0) {
       return "contenido"; // Nombre del archivo jsp
-    }else {
+    } else {
       return "index";
     }
   }
-  
+
   /**
    * Método que obtiene la pagina de una galeria dado un ID.
    * 
@@ -242,11 +267,11 @@ public class AdminController {
       return "index";
     }
     Galeria galeria = galeriaDao.obtenerGaleriaPorId(idGaleria);
-    
+
     cargarModelo(model);
-    model.addAttribute("galeria",galeria);
+    model.addAttribute("galeria", galeria);
     return "galeria"; // Nombre del archivo jsp
-  }  
+  }
 
   /**
    * Método que obtiene la pagina de todas las novedades.
@@ -256,13 +281,13 @@ public class AdminController {
    */
   @GetMapping(value = "/servicios/novedades")
   public String obtenerNovedades(Model model) {
-    
-    List<Novedad> novedades= novedadDao.getNovedades();    
+
+    List<Novedad> novedades = novedadDao.getNovedades();
     cargarModelo(model);
-    model.addAttribute("novedadesCom",novedades);
+    model.addAttribute("novedadesCom", novedades);
     return "novedades"; // Nombre del archivo jsp
-  }  
-  
+  }
+
   /**
    * Método que obtiene la pagina de todas las galerias.
    *
@@ -271,16 +296,81 @@ public class AdminController {
    */
   @GetMapping(value = "/servicios/galerias")
   public String obtenerGalerias(Model model) {
-    
-    List<Galeria> galerias = galeriaDao.getGalerias();    
+
+    List<Galeria> galerias = galeriaDao.getGalerias();
     cargarModelo(model);
-    model.addAttribute("galeriasCom" , galerias);
+    model.addAttribute("galeriasCom", galerias);
     return "galerias"; // Nombre del archivo jsp
-  }   
-  
- 
+  }
+
+
   @GetMapping("/generarInforme")
   private String generarInforme() {
-	  return "xlsView"; // Nombre del archivo jsp
+    return "xlsView"; // Nombre del archivo jsp
+  }
+
+  public static String getClientIpAddr(HttpServletRequest request) {
+    String ip = request.getHeader("X-Forwarded-For");
+    if (ip == null || ip.length() == 0 || ip.equalsIgnoreCase("unknown")) {
+      ip = request.getHeader("Proxy-Client-IP");
+    }
+    if (ip == null || ip.length() == 0 || ip.equalsIgnoreCase("unknown")) {
+      ip = request.getHeader("WL-Proxy-Client-IP");
+    }
+    if (ip == null || ip.length() == 0 || ip.equalsIgnoreCase("unknown")) {
+      ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+    }
+    if (ip == null || ip.length() == 0 || ip.equalsIgnoreCase("unknown")) {
+      ip = request.getHeader("HTTP_X_FORWARDED");
+    }
+    if (ip == null || ip.length() == 0 || ip.equalsIgnoreCase("unknown")) {
+      ip = request.getHeader("HTTP_X_CLUSTER_CLIENT_IP");
+    }
+    if (ip == null || ip.length() == 0 || ip.equalsIgnoreCase("unknown")) {
+      ip = request.getHeader("HTTP_CLIENT_IP");
+    }
+    if (ip == null || ip.length() == 0 || ip.equalsIgnoreCase("unknown")) {
+      ip = request.getHeader("HTTP_FORWARDED_FOR");
+    }
+    if (ip == null || ip.length() == 0 || ip.equalsIgnoreCase("unknown")) {
+      ip = request.getHeader("HTTP_FORWARDED");
+    }
+    if (ip == null || ip.length() == 0 || ip.equalsIgnoreCase("unknown")) {
+      ip = request.getHeader("HTTP_VIA");
+    }
+    if (ip == null || ip.length() == 0 || ip.equalsIgnoreCase("unknown")) {
+      ip = request.getHeader("REMOTE_ADDR");
+    }
+    if (ip == null || ip.length() == 0 || ip.equalsIgnoreCase("unknown")) {
+      ip = request.getRemoteAddr();
+    }
+    return ip;
+  }
+
+  @GetMapping("/recordar") // Base
+  public String recordar() {
+
+    return "Administrador/Recordar"; // Nombre del archivo jsp
+  }
+
+
+  @PostMapping("/recordarContraseña")
+  public String recordarContraseña(@ModelAttribute("login") Login login, Model model,
+      HttpServletRequest request) {
+    
+    if(login.getCorreoInstitucional().equals("")) {
+      model.addAttribute("wrong","Debes anotar por lo menos el correo.");
+      return "Administrador/Recordar";
+    }else {
+      String mensaje = usuarioDao.enviarCorreo(login.getCorreoInstitucional());
+      if(mensaje.equals("Actualizacion")) {
+        model.addAttribute("result","Contraseña recuparada con éxito");
+        return "Administrador/Login";
+      }else {
+        model.addAttribute("wrong","El correo no esta registrado en el sistema. Contacte al administrador.");
+        return "Administrador/Recordar";
+      }
+    }
+
   }
 }

@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+<%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
@@ -238,10 +238,10 @@
 
 	<!-- Carga de los archivos Javascript -->
 	
-	<script src="resources/assets/js/jquery.min.js"></script>
-	<script src="resources/assets/js/editor.js"></script>	
+
 	
 	<%@ include file="../General/scripts.jsp"%>
+	  <script src="resources/assets/js/editor.js"></script>  	
 
 	
 
@@ -278,6 +278,7 @@
 		
 		// Variable para guardar el contenido
 		var content = "";
+		var conn = [];
 		
 		// Variable para guardar el tipo de contenido
 		var tipoCon = "";
@@ -292,6 +293,22 @@
 			
 			// Aqui obtengo el contenido
 			content = document.getElementById('editor').innerHTML;			
+			
+			// Aqui lo segmento
+			var size = content.length;
+			var di = 1000;
+			
+			for(var i=0;size>0;){
+				if(size>di){
+					conn.push(content.substring(i,(i+di)));
+					size = size - di;
+					i = i + di;
+				}else{
+					conn.push(content.substring(i,(i+size)));
+					size = size - di;
+				}
+			}
+			
 			tipoCon = "PAGINA NORMAL";
 			
 		}	
@@ -314,7 +331,8 @@
 			          nombre: 			titulo,
 			          contenido:		content,
 			          url:				"",
-			          id:				idContenido
+			          id:				idContenido,
+			          conn:				conn	
 			};
 			
 			$.ajax({

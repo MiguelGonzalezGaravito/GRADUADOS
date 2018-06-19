@@ -45,7 +45,7 @@
               
 					<div style="clear:both"></div>
 					<p class="readmore-center readmore">
-				   		<a href="./index.php?modulo=galerias">
+				   		<a href="${contextPath}/servicios/galerias">
 				   			Ir a las galerías
 				   		</a>
 					</p>

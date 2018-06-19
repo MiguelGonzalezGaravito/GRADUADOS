@@ -1,5 +1,6 @@
 package co.ufps.edu.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,14 +26,8 @@ import co.ufps.edu.dto.Novedad;
 @Controller
 public class NovedadController {
 
-	private NovedadDao novedadDao;
-
-  /**
-   * Constructor de la clase en donde se inicializan las variables
-   */
-  public NovedadController() {
-	  novedadDao = new NovedadDao();
-  }
+  @Autowired
+  private NovedadDao novedadDao;
 
   /**
    * Modelo con el que se realizara el formulario
@@ -77,7 +72,8 @@ public class NovedadController {
 
     // Consulta si tiene todos los campos llenos
     if (novedad.isValidoParaRegistrar()) {
-      String mensaje = novedadDao.registrarNovedad(novedad);
+      String mensaje = "Registro exitoso";
+      novedadDao.registrarNovedad(novedad);
       if (mensaje.equals("Registro exitoso")) {
         model.addAttribute("result", "Novedad registrada con éxito.");
         model.addAttribute("novedades", novedadDao.getNovedades());
@@ -124,7 +120,8 @@ public class NovedadController {
 
     // Consulta si tiene todos los campos llenos
     if (novedad.isValidoParaActualizar()) {
-      String mensaje = novedadDao.editarNovedad(novedad);
+      String mensaje = "Actualizacion exitosa"; 
+      novedadDao.editarNovedad(novedad);
       if (mensaje.equals("Actualizacion exitosa")) {
         model.addAttribute("result", "Información de novedad actualizada con éxito.");
         model.addAttribute("novedades", novedadDao.getNovedades());

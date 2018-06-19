@@ -13,16 +13,12 @@
         		Novedades
         	</button>
         </a>
-        <a href="${contextPath}/servicios/eventos">
+        <a>
         	<button class="ufps-btn-accordionlike">
         		Eventos
         	</button>
         </a>
-        <!-- <a href="">
-        	<button class="ufps-btn-accordionlike">
-        		Convocatorias
-        	</button>
-        </a> -->
+
     </div>
     
     <div id="proximasContent" class="gdl-custom-sidebar gdl-custom-sidebar-nofirst">
@@ -30,7 +26,7 @@
     		Actividades de esta semana
     		<div class="ufps-tooltip" style="float:right;">
 	    		<span style="float:right;">
-	    			<a href="./index.php?modulo=calendarios">
+	    			<a>
 	    				<img src="resources/rsc/img/calendar.png">
 	    			</a>
 	    		</span>

@@ -2,6 +2,7 @@ package co.ufps.edu.controller;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -30,14 +31,9 @@ import co.ufps.edu.dto.Imagen;
 @Controller
 public class GaleriaController {
 
+  @Autowired
   private GaleriaDao galeriaDao;
 
-  /**
-   * Constructor de la clase en donde se inicializan las variables
-   */
-  public GaleriaController() {
-    galeriaDao = new GaleriaDao();
-  }
   
   /**
    * Modelo con el que se realizara el formulario
@@ -77,7 +73,8 @@ public class GaleriaController {
 
     // Consulta si tiene todos los campos llenos
     if (galeria.isValidoParaRegistrar()) {
-      String mensaje = galeriaDao.registrarGaleria(galeria);
+      String mensaje = "Registro exitoso";
+      galeriaDao.registrarGaleria(galeria);
       if (mensaje.equals("Registro exitoso")) {
         return new ResponseEntity<String>("REGISTRO EXITOSO", HttpStatus.OK);
       } else {
@@ -131,9 +128,10 @@ public class GaleriaController {
 
     // Consulta si tiene todos los campos llenos
     if (galeria.isValidoParaRegistrar()) {
-      String mensaje = galeriaDao.editarGaleria(galeria);
+      String mensaje = "Actualizacion exitosa";
+      galeriaDao.editarGaleria(galeria);
       if (mensaje.equals("Actualizacion exitosa")) {
-        return new ResponseEntity<String>("ACTUALIZACIÓN EXITOSA", HttpStatus.OK);
+        return new ResponseEntity<String>("ACTUALIZACION EXITOSA", HttpStatus.OK);
       } else {
         return new ResponseEntity<String>("ACTUALIZACIÓN NO EXITOSA", HttpStatus.OK);
       }

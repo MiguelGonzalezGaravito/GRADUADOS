@@ -122,13 +122,9 @@
     if (input.files && input.files[0]) {
         // Obtiene el archivo
     	var file = input.files[0];    	
-    	var url = "";
         // Creo la url a consumir
-    	if ( (window.location.pathname).indexOf('ufps') != -1 ){
-    		var url = window.location.protocol + "//" + window.location.host + "/" + (window.location.pathname).split("/")[1];
-    	}else{
-    		var url = window.location.protocol + "//" + window.location.host;
-    	}
+    	var url = window.location.protocol + "//" + window.location.host;
+
         var formData = new FormData();
         formData.append('archivo', file);
         
@@ -160,11 +156,8 @@
   function pintarImagen(id,fileType){
 	  
 	  	// Creo la url a consumir
-	  	if ( (window.location.pathname).indexOf('ufps') != -1 ){
-			var url = window.location.protocol + "//" + window.location.host + "/" + (window.location.pathname).split("/")[1];
-		}else{
-			var url = window.location.protocol + "//" + window.location.host;
-		}
+
+	  	var url = window.location.protocol + "//" + window.location.host;
         var formData = new FormData();
         formData.append('tipo', fileType);
       	
@@ -178,8 +171,9 @@
 			url : url + "/servicios/solicitarImagen",
 			data: (formData),
 			success : function(result) {
-				var doc = document.getElementById("editor").document;		
-				var img = "<a href='/"+(window.location.pathname).split("/")[1]+"/servicios/download?id="+id+"'><img src='" +  result + "' id=" + id + " height ='50' width ='50' /><a/>";
+				var doc = document.getElementById("editor").document;	
+				var urlc = url+"/servicios/download?id="+id;
+				var img = "<a href=\"/servicios/download?id="+id+"\"><img src='" +  result + "' id=" + id + " height ='50' width ='50' /><a/>";
 				document.execCommand("insertHTML", false, img);
 				
 			},
@@ -195,13 +189,8 @@
 	    if (input.files && input.files[0]) {
 	        // Obtiene el archivo
 	    	var file = input.files[0];    	
-	        
-	        // Creo la url a consumir
-	    	if ( (window.location.pathname).indexOf('ufps') != -1 ){
-	    		var url = window.location.protocol + "//" + window.location.host + "/" + (window.location.pathname).split("/")[1];
-	    	}else{
-	    		var url = window.location.protocol + "//" + window.location.host;
-	    	}
+	    	var url = window.location.protocol + "//" + window.location.host;
+
 	        var formData = new FormData();
 	        formData.append('archivo', file);
 	        

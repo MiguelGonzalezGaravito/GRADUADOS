@@ -1,5 +1,7 @@
 package co.ufps.edu.dto;
 
+import java.io.File;
+import java.util.ArrayList;
 import org.springframework.util.StringUtils;
 
 public class Contenido {
@@ -11,6 +13,7 @@ public class Contenido {
   private String contenido;
   private TipoContenido tipoContenido;
   private String url;
+  private ArrayList<String> conn;
 
   public Contenido() {
     
@@ -72,11 +75,22 @@ public class Contenido {
   }
 
   public boolean isValidoParaRegistrar() {
-    return (!StringUtils.isEmpty(this.nombre)
-        && !StringUtils.isEmpty(this.contenido)
-        && !StringUtils.isEmpty(this.tipoContenido.getNombre())
-        && !StringUtils.isEmpty(this.tipoAsociacion) && this.asociacion != 0);
-  }
+    if(this.tipoContenido.getId() == 1) {
+      return (!StringUtils.isEmpty(this.nombre)
+          && !StringUtils.isEmpty(conn.size()>0)
+          && !StringUtils.isEmpty(this.tipoContenido.getNombre())
+          && !StringUtils.isEmpty(this.tipoAsociacion) && this.asociacion != 0);
+     
+    }else {
+      return (!StringUtils.isEmpty(this.nombre)
+          && !StringUtils.isEmpty(this.contenido.length()>0)
+          && !StringUtils.isEmpty(this.tipoContenido.getNombre())
+          && !StringUtils.isEmpty(this.tipoAsociacion) && this.asociacion != 0);
+      
+    }
+    
+    
+    }
 
   public TipoContenido getTipoContenido() {
     return tipoContenido;
@@ -99,6 +113,14 @@ public class Contenido {
     return "Contenido [id=" + id + ", nombre=" + nombre + ", tipoAsociacion=" + tipoAsociacion
         + ", asociacion=" + asociacion + ",  \n contenido=" + contenido + ", \n tipoContenido="
         + tipoContenido + ", url=" + url + "]";
+  }
+
+  public ArrayList<String> getConn() {
+    return conn;
+  }
+
+  public void setConn(ArrayList<String> conn) {
+    this.conn = conn;
   }
 
 }

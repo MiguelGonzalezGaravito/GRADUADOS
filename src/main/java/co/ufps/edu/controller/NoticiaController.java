@@ -1,5 +1,6 @@
 package co.ufps.edu.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,14 +25,9 @@ import co.ufps.edu.dto.SubCategoria;
 @Controller
 public class NoticiaController {
 
+  @Autowired
   private NoticiaDao noticiaDao;
-  
-  /**
-   * Constructor de la clase en donde se inicializan las variables.
-   */
-  public NoticiaController() {
-    noticiaDao = new NoticiaDao();
-  }
+
 
   /**
    * Método que retorna una pagina con todas las noticias en el sistema.
@@ -77,7 +73,9 @@ public class NoticiaController {
     // Consulta si tiene todos los campos llenos
     if (noticia.isValidoParaRegistrar()) {
       noticiaDao.cambiarOrden();
-      String mensaje = noticiaDao.registrarNoticia(noticia);
+      
+      String mensaje = "Registro exitoso";
+      noticiaDao.registrarNoticia(noticia);
       if (mensaje.equals("Registro exitoso")) {
         model.addAttribute("result", "Noticia registrada con éxito.");
         model.addAttribute("noticias", noticiaDao.getNoticias());
@@ -212,7 +210,8 @@ public class NoticiaController {
 
     // Consulta si tiene todos los campos llenos
     if (noticia.isValidoParaActualizar()) {
-      String mensaje = noticiaDao.editarNoticia(noticia);
+      String mensaje = "Actualizacion exitosa";
+      noticiaDao.editarNoticia(noticia);
       if (mensaje.equals("Actualizacion exitosa")) {
         model.addAttribute("result", "Noticia actualizada con éxito.");
         model.addAttribute("noticias", noticiaDao.getNoticias());

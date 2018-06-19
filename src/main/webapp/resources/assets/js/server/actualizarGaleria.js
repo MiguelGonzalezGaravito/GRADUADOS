@@ -100,6 +100,7 @@
 			input.setAttribute("name","Imagen"+id);
 			input.setAttribute("accept","image/*");
 			input.setAttribute("onchange","revisarArchivos('"+id+"')");
+			input.setAttribute("required","true");
 			
 			// Se añade el input al div
 			div1.appendChild(input);
@@ -347,7 +348,7 @@
 				data: JSON.stringify(formData),
 				success : function(result) {
 						
-					if(result.trim() == 'ACTUALIZACIÓN EXITOSA'){													
+					if(result.trim() == 'ACTUALIZACION EXITOSA'){													
 						
 						pintarRegistroExitoso();
 						
@@ -368,6 +369,7 @@
 			
 			var div = document.createElement("DIV");
 			div.setAttribute("class","sufee-alert alert with-close alert-success alert-dismissible fade show");
+									  
 			var texto = document.createTextNode("Galeria actualizada con exito");       
 			div.appendChild(texto);
 			

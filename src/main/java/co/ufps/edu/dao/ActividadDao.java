@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import co.ufps.edu.bd.SpringDbMgr;
 import co.ufps.edu.dto.Actividad;
 import co.ufps.edu.util.ImagenUtil;
@@ -18,6 +20,7 @@ import co.ufps.edu.util.ImagenUtil;
  * @author ufps
  *
  */
+@Component
 public class ActividadDao {
 
   private SpringDbMgr springDbMgr;
@@ -77,6 +80,7 @@ public class ActividadDao {
     return actividades;
   }
 
+  @Async
   public String registrarActividad(Actividad actividad) {
     // Agrego los datos del registro (nombreColumna/Valor)
 
@@ -142,10 +146,10 @@ public class ActividadDao {
     return actividad;
   }
   
+  @Async
   public String editarActividad(Actividad actividad) {
 
     // Agrego los datos del registro (nombreColumna/Valor)
-
     MapSqlParameterSource map = new MapSqlParameterSource();
     map.addValue("id", actividad.getId());
     map.addValue("nombre", actividad.getNombre());

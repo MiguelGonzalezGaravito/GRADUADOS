@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import co.ufps.edu.bd.SpringDbMgr;
 import co.ufps.edu.dto.Galeria;
 import co.ufps.edu.dto.Imagen;
@@ -16,6 +18,7 @@ import co.ufps.edu.dto.ResultDB;
  * @author ufps
  *
  */
+@Component
 public class GaleriaDao {
 
   private SpringDbMgr springDbMgr;
@@ -78,6 +81,7 @@ public class GaleriaDao {
    * @param galeria Objeto con todos los datos de la galeria a registrar.
    * @return El resultado de la acción.
    */
+  @Async
   public String registrarGaleria(Galeria galeria) {
     
     // Agrego los datos del registro (nombreColumna/Valor)
@@ -171,6 +175,7 @@ public class GaleriaDao {
    * @param idGaleria Identificador de galeria.
    * @return La informacion de una galeria en un objeto.
    */
+  @Async
   public String editarGaleria(Galeria galeria) {
 
     // Agrego los datos del registro (nombreColumna/Valor)

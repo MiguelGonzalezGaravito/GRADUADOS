@@ -3,6 +3,7 @@ package co.ufps.edu.dao;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,6 +13,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import co.ufps.edu.bd.SpringDbMgr;
 import co.ufps.edu.constantes.Constantes;
@@ -21,6 +24,7 @@ import co.ufps.edu.dto.ResultDB;
 import co.ufps.edu.dto.TipoContenido;
 import co.ufps.edu.util.ImagenUtil;
 
+@Component
 public class ContenidoDao {
 
   private SpringDbMgr springDbMgr;
@@ -95,6 +99,7 @@ public class ContenidoDao {
     return cant;
   }
 
+  @Async
   public String registrarContenido(Contenido contenido) {
     // Agrego los datos del registro (nombreColumna/Valor)
 
@@ -104,7 +109,13 @@ public class ContenidoDao {
     map.addValue("TipoContenido_id", contenido.getTipoContenido().getId());
     map.addValue("asociacion", contenido.getAsociacion());
     
-    map.addValue("contenido",contenido.getContenido().getBytes(Charsets.UTF_8));
+    String conn = "";
+    if(contenido.getTipoContenido().getId() == 1) {
+      conn = String.join("", contenido.getConn());
+    }else {
+      conn = contenido.getContenido();
+    }
+    map.addValue("contenido",conn.getBytes(Charsets.UTF_8));
 
     // Armar la sentencia de actualización debase de datos
     String query =
@@ -267,6 +278,7 @@ public class ContenidoDao {
     return contenido;
   }
 
+  @Async
   public String actualizarContenido(Contenido contenido) {
  // Agrego los datos del registro (nombreColumna/Valor)
 
@@ -277,7 +289,13 @@ public class ContenidoDao {
     map.addValue("TipoContenido_id", contenido.getTipoContenido().getId());
     map.addValue("asociacion", contenido.getAsociacion());
     
-    map.addValue("contenido",contenido.getContenido().getBytes(Charsets.UTF_8));
+    String conn = "";
+    if(contenido.getTipoContenido().getId() == 1) {
+      conn = String.join("", contenido.getConn());
+    }else {
+      conn = contenido.getContenido();
+    }
+    map.addValue("contenido",conn.getBytes(Charsets.UTF_8));
 
     // Armar la sentencia de actualización debase de datos
     String query =
@@ -318,5 +336,4 @@ public class ContenidoDao {
         : "Error al eliminar el contenido. Contacte al administrador del sistema.";
   }
 
-  
 }

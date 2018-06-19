@@ -7,10 +7,13 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.support.SqlLobValue;
 import org.springframework.jdbc.support.lob.DefaultLobHandler;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import co.ufps.edu.bd.SpringDbMgr;
 import co.ufps.edu.dto.Logo;
 import co.ufps.edu.util.ImagenUtil;
 
+@Component
 public class LogoDao {
 
   private SpringDbMgr springDbMgr;
@@ -60,6 +63,7 @@ public class LogoDao {
     return logo;
   }
 
+  @Async
   public String insertarLogo(Logo logo) {
 
     // Agrego los datos del registro (nombreColumna/Valor)
@@ -91,9 +95,10 @@ public class LogoDao {
         : "Error al registrar el logo. Contacte al administrador del sistema.";
   }
 
+  @Async
   public String actualizarLogo(Logo logo) {
     // Agrego los datos del registro (nombreColumna/Valor)
-
+    System.out.println("Inicio");
     MapSqlParameterSource map = new MapSqlParameterSource();
     map.addValue("id", logo.getId());
     map.addValue("tipo", logo.getTipo());
@@ -119,6 +124,7 @@ public class LogoDao {
     }
     // Si hubieron filas afectadas es por que si hubo registro, en caso contrario muestra el mensaje
     // de error.
+    System.out.println("Termino");
     return (result == 1) ? "Actualizacion exitosa"
         : "Error al actualizar el logo. Contacte al administrador del sistema.";
   }
